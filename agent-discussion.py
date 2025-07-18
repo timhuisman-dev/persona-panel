@@ -21,17 +21,20 @@ def simulate_chat(topic, rounds=5):
 
 
 
-def run_round(topic, input_text, round_tracker):
+def run_round(name_of_turn, topic, input_text, round_tracker):
+
     if round_tracker % 2 == 0:
         response = chat_with_llm(topic, input_text)
+        name_of_turn = 'Kasper'
         print(f"Kasper: {response}")
     else:
         response = answer_input(topic, input_text)
+        name_of_turn = 'Rens'
         print(f"Rens: {response}")
 
     round_tracker += 1
 
-    return topic, response, round_tracker
+    return name_of_turn, topic, response, round_tracker
 
 
 def start_discussion(topic, description):
@@ -45,4 +48,4 @@ def start_discussion(topic, description):
 if __name__ == "__main__":
 
     # simulate_chat("lekkerste fruit", rounds=5)
-    start_discussion('fruit','wat is het lekkerst')
+    simulate_chat('fruit is het gezond')
