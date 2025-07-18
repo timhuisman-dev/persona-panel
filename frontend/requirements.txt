@@ -1,0 +1,9 @@
+# This is a Node.js (Next.js) project.
+# Dependencies are managed via package.json, not requirements.txt.
+# To install dependencies, run:
+#   npm install
+# or (if using pnpm):
+#   pnpm install
+#
+# This file is present only for compatibility with tools expecting requirements.txt.
+# If you are looking for Python dependencies, there are none in this frontend project. 
