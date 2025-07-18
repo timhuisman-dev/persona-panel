@@ -20,27 +20,25 @@ def simulate_chat(topic, rounds=5):
 
 
 
-round_tracker = {"round": 0}  # global-like mutable tracker
 
-
-def run_round(topic, input_text):
-    if round_tracker["round"] % 2 == 0:
+def run_round(topic, input_text, round_tracker):
+    if round_tracker % 2 == 0:
         response = chat_with_llm(topic, input_text)
         print(f"Kasper: {response}")
     else:
         response = answer_input(topic, input_text)
         print(f"Rens: {response}")
 
-    round_tracker["round"] += 1
+    round_tracker += 1
 
-    return response
+    return topic, response, round_tracker
 
 
 def start_discussion(topic, description):
     print(f"=== Topic: {topic} ===")
     print(f"Description: {description}\n")
 
-    return topic, description  # so you can continue manually
+    return topic, description, 0 # so you can continue manually
 
 
 
