@@ -2,9 +2,18 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
 import uuid, os, openai
+from fastapi.middleware.cors import CORSMiddleware
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # or ["*"] for all origins (not recommended for production)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class Persona(BaseModel):
     id: str
@@ -25,21 +34,25 @@ class Session(BaseModel):
     messages: list[Message]
     turn_index: int = 0
 
+class StartSessionRequest(BaseModel):
+    topic: str
+    personas: list[Persona]
+
 sessions: dict[str, Session] = {}
 
 @app.post("/sessions", response_model=Session)
-def start_session(topic: str, personas: list[Persona]):
+def start_session(req: StartSessionRequest):
     sid = str(uuid.uuid4())
-    sess = Session(id=sid, topic=topic, personas=personas, messages=[])
+    sess = Session(id=sid, topic=req.topic, personas=req.personas, messages=[])
     sessions[sid] = sess
-    return sess 
+    return sess
 
 @app.get("/sessions/{sid}", response_model=Session)
 def get_session(sid: str):
     sess = sessions.get(sid)
     if not sess:
         raise HTTPException(404, "Session not found")
-    return sess 
+    return sess
 
 @app.post("/sessions/{sid}/next", response_model=Message)
 async def next_turn(sid: str):
@@ -65,7 +78,7 @@ async def next_turn(sid: str):
     msg = Message(speaker_id=persona.id, content=text, timestamp=datetime.utcnow())
     sess.messages.append(msg)
     sess.turn_index += 1
-    return msg 
+    return msg
 
 @app.post("/sessions/{sid}/summary")
 async def summary(sid: str):
@@ -81,4 +94,4 @@ async def summary(sid: str):
         model="gpt-4o-mini",
         messages=[{"role":"user","content":prompt}]
     )
-    return {"summary": resp.choices[0].message.content} 
+    return {"summary": resp.choices[0].message.content}
