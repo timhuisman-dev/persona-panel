@@ -1,5 +1,32 @@
 # Persona Discussion Panel – Requirements Document
 
+## Backend Implementation (as of 2024-07-18)
+
+The backend is implemented using FastAPI and OpenAI's API. It provides endpoints for managing discussion sessions between AI personas. Key features:
+
+### Data Models
+- **Persona**: id, name, description, traits, tone
+- **Message**: speaker_id, content, timestamp
+- **Session**: id, topic, personas (list), messages (list), turn_index
+
+### In-Memory Store
+- All sessions are stored in a module-level dictionary: `sessions: dict[str, Session]`
+
+### Endpoints
+- `POST /sessions` – Start a new session with a topic and list of personas. Returns the created Session object.
+- `GET /sessions/{sid}` – Retrieve a session by its ID.
+- `POST /sessions/{sid}/next` – Advance the discussion by generating the next persona's response using OpenAI. Returns the new Message.
+- `POST /sessions/{sid}/summary` – Generate a summary of the discussion so far using OpenAI. Returns a summary string.
+
+### AI Integration
+- Uses OpenAI's `gpt-4o-mini` model for persona responses and summary generation.
+- Each persona's turn is generated with full access to the conversation history and persona traits.
+
+### Notes
+- All data is in-memory (no persistence).
+- Requires `OPENAI_API_KEY` environment variable.
+- See backend/main.py for implementation details.
+
 ## 1. Purpose
 
 Build a web application for creative ideation that simulates a structured discussion between diverse AI personas. The system helps users generate insight by observing how multiple viewpoints respond to a prompt.
