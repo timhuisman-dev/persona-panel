@@ -1,11 +1,12 @@
 from dotenv import load_dotenv
 from openai import OpenAI
+import os
 
 # Load environment variables from .env
 load_dotenv()
+api_key = os.getenv("OPENAIKEY")
 
-# Initialize OpenAI client using API key from env
-client = OpenAI()
+client = OpenAI(api_key=api_key)
 
 #topic, current discussion,
 # Function to chat with GPT-4
@@ -19,7 +20,7 @@ Je mag nepfeiten verzinnen."""}
         ],
 
     )
-    return response.choices[0].message.content
+    return "Kasper: " + response.choices[0].message.content
 
 
 # Chat loop

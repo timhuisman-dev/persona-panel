@@ -1,7 +1,12 @@
 from openai import OpenAI
 import pandas as pd
+from dotenv import load_dotenv
+import os
 
-client = OpenAI(api_key="")
+load_dotenv()
+api_key = os.getenv("OPENAIKEY")
+
+client = OpenAI(api_key=api_key)
 
 def answer_input(topic:str, previous_discussion: str) -> str:
 
