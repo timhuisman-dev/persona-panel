@@ -1,10 +1,7 @@
-from dotenv import load_dotenv
 from openai import OpenAI
+import pandas as pd
 
-# Load environment variables from .env
-load_dotenv()
-client = OpenAI()
-
+client = OpenAI(api_key="")
 
 def answer_input(topic:str, previous_discussion: str) -> str:
 
@@ -31,7 +28,7 @@ def answer_input(topic:str, previous_discussion: str) -> str:
         max_tokens = 60,
         temperature=0,
     )
-    return response.choices[0].message.content
+    return "Rens: " + response.choices[0].message.content
 
 if __name__ == "__main__":
     response = answer_input("Fruit", "Appel is het beste fruit")

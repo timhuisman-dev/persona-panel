@@ -1,5 +1,6 @@
 from agent_kasper import chat_with_llm
 from agent_r import answer_input
+from agent_sjoerd import chat_with_llm_sjoerd
 
 
 
@@ -21,15 +22,19 @@ def simulate_chat(topic, rounds=5):
 
 
 def run_round(name_of_turn, topic, input_text, round_tracker):
-
-    if round_tracker % 2 == 0:
+    # Cycle: Kasper (0), Rens (1), Sjoerd (2)
+    if round_tracker % 3 == 0:
         response = chat_with_llm(topic, input_text)
         name_of_turn = 'Kasper'
         print(f"Kasper: {response}")
-    else:
+    elif round_tracker % 3 == 1:
         response = answer_input(topic, input_text)
         name_of_turn = 'Rens'
         print(f"Rens: {response}")
+    else:
+        response = chat_with_llm_sjoerd(topic, input_text)
+        name_of_turn = 'Sjoerd'
+        print(f"Sjoerd: {response}")
 
     round_tracker += 1
 
@@ -40,7 +45,7 @@ def start_discussion(topic, description):
     print(f"=== Topic: {topic} ===")
     print(f"Description: {description}\n")
 
-    return topic, description, 0 # so you can continue manually
+    return "Kasper",topic, description, 0 # so you can continue manually
 
 
 
