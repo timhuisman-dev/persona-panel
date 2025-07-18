@@ -3,7 +3,6 @@ from agent_r import answer_input
 
 
 
-
 def simulate_chat(topic, rounds=5):
     print(f"=== Topic: {topic} ===\n")
     kasper_input = "Let's start the discussion."
