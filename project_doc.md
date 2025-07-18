@@ -27,6 +27,44 @@ The backend is implemented using FastAPI and OpenAI's API. It provides endpoints
 - Requires `OPENAI_API_KEY` environment variable.
 - See backend/main.py for implementation details.
 
+## Frontend Implementation (as of 2024-07-18)
+
+The frontend is implemented using Next.js (React) and Tailwind CSS. It provides a modern, responsive interface for managing persona-based discussions. Key features and structure:
+
+### Project Structure
+- **/app/**: Main application pages and layout (Next.js app directory).
+- **/components/**: Reusable React components, including UI primitives (button, card, input, etc.) and higher-level elements (theme provider, sidebar, etc.).
+- **/hooks/**: Custom React hooks for state and utility logic.
+- **/styles/**: Global and utility CSS, primarily using Tailwind.
+- **/public/**: Static assets (avatars, logos, etc.).
+- **/lib/**: Utility functions and helpers.
+
+### Main UI Elements
+- **Header**: Fixed at the top, shows app title and controls for starting a new topic discussion.
+- **Sidebar**: Vertical panel displaying persona avatars, connection status, and tooltips with persona info on hover.
+- **Main Content**: 
+  - **Topic Display**: Editable topic/question at the top of the chat area.
+  - **Chat Area**: Threaded, chat-style display of persona responses, showing speaker name, timestamp, and message content.
+  - **Input Bar**: At the bottom, allows the user to input new questions or continue the discussion.
+- **Dialogs/Modals**: For creating new topics and managing personas.
+- **Tooltips**: On persona avatars, showing persona details and connection status.
+
+### Styling & Theming
+- Uses **Tailwind CSS** for utility-first styling, with custom color variables for light/dark themes.
+- Theme switching is supported via a ThemeProvider (next-themes).
+- Responsive design for desktop and mobile.
+
+### Component Library
+- UI primitives are built on top of [shadcn/ui](https://ui.shadcn.com/) and Radix UI, providing accessible, composable components (e.g., Button, Card, Tabs, Dialog, Tooltip, etc.).
+- Custom components extend these primitives for app-specific needs.
+
+### Technical Notes
+- State is managed with React hooks (useState, custom hooks).
+- Mock data is currently used for personas and messages; integration with backend endpoints is planned.
+- All logic is client-side; async API calls will be added for real persona/message flow.
+- TypeScript is used throughout for type safety.
+- See frontend/app/page.tsx for main panel implementation.
+
 ## 1. Purpose
 
 Build a web application for creative ideation that simulates a structured discussion between diverse AI personas. The system helps users generate insight by observing how multiple viewpoints respond to a prompt.
