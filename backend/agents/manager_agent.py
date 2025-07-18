@@ -20,7 +20,7 @@ class ManagerAgent:
 
     def put_into_perspectieven(self):
         for _ in range(5):
-            for agent_func in [answer_input, chat_with_llm, chat_with_llm]:
+            for agent_func in [answer_input, chat_with_llm, chat_with_llm_sjoerd]:
                 response = agent_func(self.topic, self.user_input)
                 print(response, "\n")
                 self.user_input += response
