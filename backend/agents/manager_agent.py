@@ -2,9 +2,9 @@ from dotenv import load_dotenv
 import os
 from openai import OpenAI
 from typing import List
-from agent-r import answer_input
-from agent-kasper import chat_with_llm
-from agent_sjoerd import chat_with_llm_sjoerd
+from backend.agents.agent-r import answer_input
+from backend.agents.agent-kasper import chat_with_llm
+#from backend.agents.agent_sjoerd import chat_with_llm_sjoerd
 
 
 load_dotenv()
@@ -19,13 +19,13 @@ class ManagerAgent:
         self.topic = topic
         self.agent_rens = answer_input(self.topic, self.user_input)
         self.agent_kasper = chat_with_llm(self.topic, self.user_input)
-        self.agent_sjoerd = chat_with_llm_sjoerd(self.topic, self.user_input)
+        #self.agent_sjoerd = chat_with_llm_sjoerd(self.topic, self.user_input)
 
     def put_into_perspectieven(self):
         perspectieven = []
         perspectieven.append(self.agent_rens)
         perspectieven.append(self.agent_kasper)
-        perspectieven.append(self.agent_sjoerd)
+        #perspectieven.append(self.agent_sjoerd)
         return(perspectieven)
     
     def host_discussion(self) -> str:
