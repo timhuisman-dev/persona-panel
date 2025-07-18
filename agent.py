@@ -11,10 +11,10 @@ client = OpenAI()
 # Function to chat with GPT-4
 def chat_with_llm(topic, user_input):
     response = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": "Je bent een zeer agressieve assistent en doet er alles aan om een discussie te winnen. Antwoord in drie zinnen"},
-            {"role": "user", "content": f"""Jouw naam is  Het onderwerp is {topic} en de invoer van de gebruiker is: {user_input}. Geef een krachtige reactie waarmee je het gesprek wint.
+            {"role": "user", "content": f"""Het onderwerp is {topic} en de invoer van de gebruiker is: {user_input}. Geef een krachtige reactie waarmee je het gesprek wint. ouw naam is Kasper. als er vorige berichten zijn van jou, houdt je dan aan je vorige mening. 
 Je mag nepfeiten verzinnen."""}
         ],
 
@@ -23,7 +23,6 @@ Je mag nepfeiten verzinnen."""}
 
 
 # Chat loop
-
 
 if __name__ == "__main__":
 
