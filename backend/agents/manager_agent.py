@@ -4,7 +4,7 @@ from openai import OpenAI
 from typing import List
 from backend.agents.agent_r import answer_input
 from backend.agents.agent_kasper import chat_with_llm
-#from backend.agents.agent_sjoerd import chat_with_llm_sjoerd
+from backend.agents.agent_sjoerd import chat_with_llm_sjoerd
 
 
 load_dotenv()
@@ -20,7 +20,7 @@ class ManagerAgent:
 
     def put_into_perspectieven(self):
         for _ in range(5):
-            for agent_func in [answer_input, chat_with_llm]:
+            for agent_func in [answer_input, chat_with_llm, chat_with_llm]:
                 response = agent_func(self.topic, self.user_input)
                 print(response, "\n")
                 self.user_input += response
