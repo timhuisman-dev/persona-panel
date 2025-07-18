@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { startSession, getSession, nextTurn, getSummary, Persona, Session, Message } from "@/lib/api"
+import { startSession, getSession, nextTurn, getSummary, Persona, Session, Message, addMessage } from "@/lib/api"
 
 export default function PersonaDiscussionPanel() {
   const [session, setSession] = useState<Session | null>(null)
@@ -31,49 +31,13 @@ export default function PersonaDiscussionPanel() {
   //   }
   // }, [])
 
+  // Remove persona logic
+
   const handleNewTopicSubmit = async () => {
     setLoading(true)
     setError(null)
     try {
-      // For MVP, personas are hardcoded; in future, use persona builder
-      const personas: Persona[] = [
-        {
-          id: "1",
-          name: "Dr. Sarah Chen",
-          description: "AI Ethics Researcher",
-          traits: ["ethical", "thoughtful"],
-          tone: "formal",
-        },
-        {
-          id: "2",
-          name: "Marcus Rodriguez",
-          description: "Product Manager",
-          traits: ["pragmatic", "goal-oriented"],
-          tone: "casual",
-        },
-        {
-          id: "3",
-          name: "Elena Kowalski",
-          description: "UX Designer",
-          traits: ["empathetic", "creative"],
-          tone: "friendly",
-        },
-        {
-          id: "4",
-          name: "James Thompson",
-          description: "Software Engineer",
-          traits: ["technical", "precise"],
-          tone: "direct",
-        },
-        {
-          id: "5",
-          name: "Dr. Aisha Patel",
-          description: "Data Scientist",
-          traits: ["analytical", "cautious"],
-          tone: "measured",
-        },
-      ]
-      const sess = await startSession(newTopicForm.title, personas)
+      const sess = await startSession(newTopicForm.title, newTopicForm.description)
       setSession(sess)
       setIsNewTopicOpen(false)
       setNewTopicForm({ title: "", description: "", initialQuestion: "" })
@@ -94,6 +58,27 @@ export default function PersonaDiscussionPanel() {
       setSession({ ...session, messages: [...session.messages, msg], turn_index: session.turn_index + 1 })
     } catch (e: any) {
       setError(e.message || 'Failed to continue discussion')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSendMessage = async () => {
+    if (!session || !inputMessage.trim()) return
+    setLoading(true)
+    setError(null)
+    try {
+      const now = new Date().toISOString()
+      const message: Message = {
+        speaker_id: "user", // generic user
+        content: inputMessage,
+        timestamp: now,
+      }
+      const newMsg = await addMessage(session.id, message)
+      setSession({ ...session, messages: [...session.messages, newMsg] })
+      setInputMessage("")
+    } catch (e: any) {
+      setError(e.message || 'Failed to send message')
     } finally {
       setLoading(false)
     }
@@ -132,34 +117,7 @@ export default function PersonaDiscussionPanel() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar */}
-        <aside className="w-20 bg-gray-50 border-r border-gray-200 flex flex-col items-center py-6 gap-4">
-          {session?.personas.map((persona, idx) => (
-            <div key={persona.id} className="relative group">
-              <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-medium cursor-pointer transition-all relative bg-blue-500 hover:scale-105`}
-              >
-                {persona.name.split(' ').map(n => n[0]).join('')}
-                {/* Connection Status Indicator */}
-                <div
-                  className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white bg-green-500`}
-                  title="Connected"
-                />
-              </div>
-              {/* Tooltip */}
-              <div className="absolute left-16 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-md text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                <div className="font-medium">{persona.name}</div>
-                <div className="text-gray-300 text-xs">{persona.description}</div>
-                <div className="flex items-center gap-1 mt-1">
-                  <div className="w-2 h-2 rounded-full bg-green-400" />
-                  <span className="text-xs text-gray-300">Connected</span>
-                </div>
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
-              </div>
-            </div>
-          ))}
-        </aside>
-
+        {/* Left Sidebar removed */}
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col">
           {/* Discussion Topic */}
@@ -172,11 +130,10 @@ export default function PersonaDiscussionPanel() {
           {/* Chat Discussion Area */}
           <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
             {session?.messages.map((message, index) => {
-              const persona = session.personas.find(p => p.id === message.speaker_id)
               return (
                 <div key={index} className={`p-4 rounded-lg ${index % 2 === 0 ? "bg-gray-50" : "bg-blue-50"}`}>
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-gray-900">{persona?.name || message.speaker_id}</h4>
+                    <h4 className="font-medium text-gray-900">{message.speaker_id}</h4>
                     <span className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleTimeString()}</span>
                   </div>
                   <p className="text-gray-700 leading-relaxed">{message.content}</p>
@@ -189,13 +146,18 @@ export default function PersonaDiscussionPanel() {
           <div className="px-6 py-4 border-t border-gray-200 bg-white">
             <div className="flex gap-3">
               <Input
-                placeholder="Ask the next question… (not yet implemented)"
+                placeholder="Type your message…"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 className="flex-1"
-                disabled
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
+                disabled={!session || loading}
               />
-              <Button className="flex items-center gap-2" onClick={handleContinueDiscussion} disabled={!session || loading}>
+              <Button className="flex items-center gap-2" onClick={handleSendMessage} disabled={!session || loading || !inputMessage.trim()}>
+                <Send className="w-4 h-4" />
+                {loading ? 'Sending...' : 'Send'}
+              </Button>
+              <Button className="flex items-center gap-2" onClick={handleContinueDiscussion} disabled={!session || loading} variant="secondary">
                 <Send className="w-4 h-4" />
                 {loading ? 'Thinking...' : 'Continue Discussion'}
               </Button>
